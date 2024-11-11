@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дизайнерська сторінка</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Основний стиль */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #a8edea, #fed6e3);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 25px;
+            color: #444;
+            text-align: center;
+        }
+
+        /* Стиль для посилань */
+        a {
+            color: #fff;
+            background-color: #007bff;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Стиль для контент-блоку */
+        #content {
+            background-color: #ffeb3b;
+            color: #333;
+            padding: 25px;
+            border-radius: 10px;
+            width: 60%;
+            margin-top: 25px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.2em;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Стиль для форми погоди */
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            font-size: 2em;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 250px;
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        button {
+            padding: 15px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Стиль для блоку погоди */
+        #weather {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+            width: 60%;
+            font-size: 1.2em;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            line-height: 1.6;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Веб-сторінка з JSON та API</h1>
+    
+    <!-- Завдання 1: Завантаження JSON даних -->
+    <div>
+        <a href="#" onclick="loadData('1.txt')">Мови</a>
+        <a href="#" onclick="loadData('2.txt')">Студенти</a>
+    </div>
+    <div id="content">Тут з'явиться інформація</div>
+
+    <!-- Завдання 2: Отримання даних про погоду -->
+    <h2>Отримати погоду</h2>
+    <input type="text" id="city" placeholder="Введіть назву міста">
+    <button onclick="getWeather()">Отримати погоду</button>
+    <div id="weather">Погода буде відображена тут</div>
+
+    <script>
+        // Функція для завантаження JSON даних
+        function loadData(filename) {
+            fetch(filename)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('content').innerHTML = data.join('<br>');
+                })
+                .catch(error => console.error("Помилка завантаження файлу:", error));
+        }
+
+        // API ключ для погоди
+        const apiKey = "05479e5bf0a408fb029b479565c1b0b1";
+
+        // Функція для отримання даних про погоду
+        function getWeather() {
+    const city = document.getElementById('city').value.trim();
+    if (!city) {
+        alert("Будь ласка, введіть назву міста");
+        return;
+    }
+
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=uk`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Помилка: місто не знайдено або проблема з API ключем");
+            }
+            return response.json();
+        })
+        .then(data => {
+            const weatherInfo = `
+                <h3>Погода в ${city}</h3>
+                <p>Температура: ${data.main.temp}°C</p>
+                <p>Вологість: ${data.main.humidity}%</p>
+                <p>Швидкість вітру: ${data.wind.speed} м/с</p>
+            `;
+            document.getElementById('weather').innerHTML = weatherInfo;
+        })
+        .catch(error => {
+            console.error("Помилка отримання погоди:", error);
+            document.getElementById('weather').innerHTML = `<p style="color:red;">${error.message}</p>`;
+        });
+}
+
+    </script>
+</body>
+</html>
